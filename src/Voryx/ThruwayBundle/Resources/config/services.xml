@@ -70,6 +70,12 @@
             <argument type="service" id="voryx.thruway.resource.mapper"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="logger"/>
+            <call method="setParamConverterManager">
+                <argument type="service" id="sensio_framework_extra.converter.manager"/>
+            </call>
+            <call method="setReader">
+                <argument type="service" id="annotation_reader"/>
+            </call>
         </service>
 
         <service id="newsletter_manager" class="NewsletterManager">

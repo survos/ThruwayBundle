@@ -2,11 +2,15 @@
 
 namespace Voryx\ThruwayBundle;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Driver\Connection;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Psr\Log\LoggerInterface;
 use React\Promise\Promise;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -78,6 +82,11 @@ class WampKernel implements HttpKernelInterface
      */
     private $processInstance;
 
+    /** @var Reader */
+    private $reader;
+
+    /** @var ParamConverterManager */
+    private $paramConverterManager;
 
     /**
      * @param ContainerInterface $container
@@ -200,7 +209,18 @@ class WampKernel implements HttpKernelInterface
             $this->cleanup();
 
             $controller     = $this->container->get($mapping->getServiceId());
-            $controllerArgs = $this->deserializeArgs($args, $mapping);
+            /** @var Register $annotation */
+            $annotation = $mapping->getAnnotation();
+            switch ($annotation->getArgumentSource()) {
+                case 'list':
+                    $controllerArgs = $this->deserializeArgs($args, $mapping);
+                    break;
+                case 'dict':
+                    $controllerArgs = $this->lookupArgs($argsKw, $mapping);
+                    break;
+                default:
+                    throw new \Exception("Wrong source: {$annotation->getArgumentSource()}");
+            }
 
             $this->setControllerContainerDetails($controller, $args, $argsKw, $details);
             $this->setControllerContainerUser($controller, $details);
@@ -460,6 +480,37 @@ class WampKernel implements HttpKernelInterface
     }
 
     /**
+     * @param $argsKw
+     * @param MappingInterface $mapping
+     * @return array|bool
+     */
+    private function lookupArgs($argsKw, MappingInterface $mapping)
+    {
+        try {
+            /** @var \ReflectionMethod $method */
+            $method = $mapping->getMethod();
+            $configurations = [];
+            foreach ($this->reader->getMethodAnnotations($method) as $annotation) {
+                if ($annotation instanceof ParamConverter) {
+                    $configurations[$annotation->getName()] = $annotation;
+                }
+            }
+            $request = new Request([], [], (array) $argsKw);
+            $this->paramConverterManager->apply($request, $configurations);
+            $result = [];
+            foreach ($method->getParameters() as $param) {
+                $result[] = $request->attributes->get($param->getName());
+            }
+            return $result;
+        } catch (\Exception $e) {
+            $this->logger->emergency($e->getMessage());
+
+        }
+
+        return [];
+    }
+
+    /**
      * @param $authid
      * @param ContainerInterface $container
      * @return UserInterface
@@ -650,4 +701,20 @@ class WampKernel implements HttpKernelInterface
         return $this->session;
     }
 
+
+    /**
+     * @param Reader $reader
+     */
+    public function setReader(Reader $reader)
+    {
+        $this->reader = $reader;
+    }
+
+    /**
+     * @param ParamConverterManager $paramConverterManager
+     */
+    public function setParamConverterManager(ParamConverterManager $paramConverterManager)
+    {
+        $this->paramConverterManager = $paramConverterManager;
+    }
 }

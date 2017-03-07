@@ -42,6 +42,9 @@ class Register implements AnnotationInterface
 
     protected $topicStateHandlerOptions;
 
+    /** @var string list|dict */
+    protected $argumentSource = 'list';
+
     /**
      * @param $options
      * @throws \InvalidArgumentException
@@ -146,5 +149,21 @@ class Register implements AnnotationInterface
     public function getTopicStateHandlerOptions()
     {
         return $this->topicStateHandlerOptions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArgumentSource(): string
+    {
+        return $this->argumentSource;
+    }
+
+    /**
+     * @param string $argumentSource
+     */
+    public function setArgumentSource(string $argumentSource)
+    {
+        $this->argumentSource = $argumentSource;
     }
 }
