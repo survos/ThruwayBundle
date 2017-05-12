@@ -229,7 +229,7 @@ class WampKernel implements HttpKernelInterface
 
             return $rawResult;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->cleanup();
             $message = "Unable to make the call: {$mapping->getAnnotation()->getName()} \n Message:  {$e->getMessage()}";
             $this->logger->critical($message);
@@ -301,7 +301,7 @@ class WampKernel implements HttpKernelInterface
 
             $this->cleanup($controller);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->cleanup();
             $message = "Unable to publish to: {$mapping->getAnnotation()->getName()} \n Message:  {$e->getMessage()}";
             $this->logger->critical($message);
@@ -467,7 +467,7 @@ class WampKernel implements HttpKernelInterface
 
             return $deserializedArgs;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->emergency($e->getMessage());
 
         }
@@ -498,7 +498,7 @@ class WampKernel implements HttpKernelInterface
                 $result[] = $request->attributes->get($param->getName());
             }
             return $result;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->emergency($e->getMessage());
 
         }
