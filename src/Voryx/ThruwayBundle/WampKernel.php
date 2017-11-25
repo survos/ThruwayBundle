@@ -78,18 +78,15 @@ class WampKernel implements HttpKernelInterface
      */
     private $processInstance;
 
-<<<<<<< HEAD
     /** @var Reader */
     private $reader;
 
     /** @var ParamConverterManager */
     private $paramConverterManager;
-=======
     /**
      * @var LoggerInterface
      */
     private $logger;
->>>>>>> origin/master
 
     /**
      * @param ContainerInterface $container
@@ -236,11 +233,7 @@ class WampKernel implements HttpKernelInterface
 
             return $rawResult;
 
-<<<<<<< HEAD
-        } catch (\Throwable $e) {
-=======
-        } catch (\Exception $e) {
->>>>>>> origin/master
+        } catch (\Exception $e) { // Throwable?
             $this->cleanup();
             $message = "Unable to make the call: {$mapping->getAnnotation()->getName()} \n Message:  {$e->getMessage()}";
             $this->logger->critical($message);
@@ -283,13 +276,9 @@ class WampKernel implements HttpKernelInterface
                 $d = $d instanceof CallResult ? [$d[0]] : $d;
                 return $this->serializer->normalize($d, $context);
             });
-<<<<<<< HEAD
-        } elseif ($rawResult !== null) {
-=======
         }
 
         if ($rawResult !== null) {
->>>>>>> origin/master
             return $this->serializer->normalize($rawResult, null, $context);
         }
     }
@@ -326,14 +315,6 @@ class WampKernel implements HttpKernelInterface
         }
     }
 
-<<<<<<< HEAD
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-=======
->>>>>>> origin/master
     /**
      * @param $controller
      * @return mixed|void
@@ -698,9 +679,9 @@ class WampKernel implements HttpKernelInterface
     {
         return $this->session;
     }
-<<<<<<< HEAD
 
 
+    // Added by Survos
     /**
      * @param Reader $reader
      */
@@ -716,6 +697,4 @@ class WampKernel implements HttpKernelInterface
     {
         $this->paramConverterManager = $paramConverterManager;
     }
-=======
->>>>>>> origin/master
 }
