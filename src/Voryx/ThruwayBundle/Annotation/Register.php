@@ -60,7 +60,6 @@ class Register implements AnnotationInterface
             }
             $this->$key = $value;
         }
-
     }
 
     /**

@@ -2,6 +2,10 @@
 
 namespace Voryx\ThruwayBundle\Tests;
 
+<<<<<<< HEAD
+=======
+use PHPUnit\Framework\TestCase;
+>>>>>>> origin/master
 use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -11,10 +15,11 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Voryx\ThruwayBundle\Annotation\Register;
 use Voryx\ThruwayBundle\Mapping\URIClassMapping;
+use Voryx\ThruwayBundle\Serialization\ArrayEncoder;
 use Voryx\ThruwayBundle\Tests\Fixtures\Person;
 use Voryx\ThruwayBundle\WampKernel;
 
-class WampKernelTest extends \PHPUnit_Framework_TestCase
+class WampKernelTest extends TestCase
 {
 
     /** @var  Container */
@@ -36,7 +41,11 @@ class WampKernelTest extends \PHPUnit_Framework_TestCase
         $resourceMapper = new \Voryx\ThruwayBundle\ResourceMapper($reader);
         $dispatcher     = new EventDispatcher();
 
+<<<<<<< HEAD
         $encoders    = [new JsonEncoder()];
+=======
+        $encoders    = [new ArrayEncoder(), new JsonEncoder()];
+>>>>>>> origin/master
         $normalizers = [new ObjectNormalizer()];
 
         $this->serializer = new Serializer($normalizers, $encoders);
